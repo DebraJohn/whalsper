@@ -1,15 +1,14 @@
 <template>
   <div class="banner">
-    <div class="wrapper">
-      <div
-        class="slider"
-        v-for="(item, index) in sliderData"
-        :key="index"
-        :class="index === 0 ? 'current' : index === sliderData.length - 1 ? 'left' : ''"
-        @touchstart="getStartPos"
-        @touchmove="calcPos"
-      >
-        <img :src="item.picUrl" alt="banner">
+    <div class="wrapper" @touchstart="getStartPos" @touchmove="calcPos">
+      <div class="slider left">
+        <img :src="sliderData[prevIndex()].picUrl" alt="banner">
+      </div>
+      <div class="slider current" :style="{left:leftPos + 'px'}">
+        <img :src="sliderData[curIndex].picUrl" alt="banner">
+      </div>
+      <div class="slider">
+        <img :src="sliderData[nextIndex()].picUrl" alt="banner">
       </div>
     </div>
   </div>
@@ -28,7 +27,9 @@ export default {
   name: "banner",
   data() {
     return {
-      sliderData: DATA.data.slider
+      sliderData: DATA.data.slider,
+      curIndex: 0,
+      leftPos: 0
     };
   },
   methods: {
@@ -37,55 +38,33 @@ export default {
     },
     getStartPos(e) {
       this.startPos = e.targetTouches[0].clientX;
-      // console.log(this.startPos);
     },
     calcPos(e) {
       const target = e.currentTarget;
       target.clientX = this.diff;
       this.endPos = e.targetTouches[0].clientX;
       this.diff = +(this.endPos - this.startPos);
-      target.style.left = `${this.diff}px`;
+      this.leftPos = this.diff;
       target.ontouchend = () => {
-        this.switchBanner(target);
+        if (this.diff > 0) {
+          this.curIndex = this.prevIndex();
+        } else {
+          this.curIndex = this.nextIndex();
+        }
+        setTimeout(() => {
+          this.leftPos = 0;
+        }, 300);
       };
     },
-    switchBanner(target) {
-      const $sliderEls = $(".banner .wrapper");
-      const $sliderItem = $sliderEls.find(".slider");
-      $sliderItem.removeClass("current");
-      const $target = $(target);
-      let $oriEl;
-      if (this.diff > 0) {
-        $oriEl = $target.prev().length
-          ? $target.prev()
-          : $sliderEls.find(".slider:last");
-        $oriEl
-          .removeClass("left")
-          .addClass("current")
-          .css("z-index", 3)
-          .siblings()
-          .css("z-index", 0);
-      } else {
-        $sliderEls.find(".left").removeClass("left");
-        $oriEl = $target.next().length
-          ? $target.next()
-          : $sliderEls.find(".slider:first");
-        $oriEl
-          .addClass("current")
-          .css("z-index", 3)
-          .siblings()
-          .css("z-index", 0);
-      }
+    switchPic() {},
 
-      const $curLeft = $oriEl.prev().length
-        ? $oriEl.prev()
-        : $sliderEls.find(".slider:last");
-      $curLeft.addClass("left").css("z-index", "1");
-      const $curRight = $oriEl.next().length
-        ? $oriEl.next()
-        : $sliderEls.find(".slider:first");
-      $curRight.css("z-index", "1");
-      $sliderItem.css("left", 0);
+    prevIndex() {
+      return this.curIndex - 1 > 0
+        ? this.curIndex - 1
+        : this.sliderData.length - 1;
+    },
+    nextIndex() {
+      return this.curIndex + 1 < this.sliderData.length ? this.curIndex + 1 : 0;
     }
   },
   created: function() {
