@@ -1,14 +1,14 @@
 <template>
   <div class="banner">
     <div class="wrapper" @touchstart="getStartPos" @touchmove="calcPos">
-      <div class="slider left">
-        <img :src="sliderData[prevIndex()].picUrl" alt="banner">
-      </div>
-      <div class="slider current" :style="{left:leftPos + 'px'}">
-        <img :src="sliderData[curIndex].picUrl" alt="banner">
-      </div>
-      <div class="slider">
-        <img :src="sliderData[nextIndex()].picUrl" alt="banner">
+      <div
+        v-for="(item, i) in sliderData"
+        :key="i"
+        :style="{left:leftPos + 'px'}"
+        class="slider"
+        :class="i === curIndex ? 'current' : i === prevIndex() ? 'left' : i === nextIndex() ? 'right' : ''"
+      >
+        <img :src="item.picUrl" alt="banner">
       </div>
     </div>
   </div>
@@ -41,34 +41,35 @@ export default {
     },
     calcPos(e) {
       const target = e.currentTarget;
-      target.clientX = this.diff;
       this.endPos = e.targetTouches[0].clientX;
       this.diff = +(this.endPos - this.startPos);
       this.leftPos = this.diff;
       target.ontouchend = () => {
-        if (this.diff > 0) {
+        if (this.diff > 50) {
           this.curIndex = this.prevIndex();
-        } else {
+        } else if (this.diff < -50) {
           this.curIndex = this.nextIndex();
         }
-        setTimeout(() => {
-          this.leftPos = 0;
-        }, 300);
+        this.leftPos = 0;
       };
     },
-    switchPic() {},
-
     prevIndex() {
-      return this.curIndex - 1 > 0
+      return this.curIndex - 1 >= 0
         ? this.curIndex - 1
         : this.sliderData.length - 1;
     },
     nextIndex() {
       return this.curIndex + 1 < this.sliderData.length ? this.curIndex + 1 : 0;
+    },
+    autoChange() {
+      this.autoTimer = setInterval(() => {
+        this.curIndex = this.nextIndex();
+      }, 5000);
     }
   },
   created: function() {
     this.showData();
+    // this.autoChange();
   }
 };
 </script>
@@ -90,14 +91,19 @@ export default {
       left: 0;
       border-radius: 0.5rem;
       overflow: hidden;
-      transform: scale(0.8) translate(115%, 0);
+      display: none;
       transition: 0.3s linear;
       &.current {
         z-index: 3;
-        transform: scale(1) translate(0);
+        display: block;
       }
       &.left {
         transform: scale(0.8) translate(-115%, 0);
+        display: block;
+      }
+      &.right {
+        transform: scale(0.8) translate(115%, 0);
+        display: block;
       }
       & > img {
         width: 100%;
