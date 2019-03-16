@@ -4,7 +4,7 @@
       <div
         v-for="(item, i) in sliderData"
         :key="i"
-        :style="{left:leftPos + 'px'}"
+        :style="{left:diff + 'px'}"
         class="slider"
         :class="i === curIndex ? 'current' : i === prevIndex() ? 'left' : i === nextIndex() ? 'right' : ''"
       >
@@ -20,22 +20,20 @@ import vueBeauty from "vue-beauty";
 import "vue-beauty/package/style/vue-beauty.min.css";
 Vue.use(vueBeauty);
 
-import $ from "jquery";
-import DATA from "@/assets/mock";
+import axios from "axios";
 
 export default {
   name: "banner",
   data() {
     return {
-      sliderData: DATA.data.slider,
       curIndex: 0,
-      leftPos: 0
+      diff: 0
     };
   },
+  props: {
+    sliderData: Array
+  },
   methods: {
-    showData() {
-      console.log(DATA);
-    },
     getStartPos(e) {
       this.startPos = e.targetTouches[0].clientX;
     },
@@ -43,14 +41,13 @@ export default {
       const target = e.currentTarget;
       this.endPos = e.targetTouches[0].clientX;
       this.diff = +(this.endPos - this.startPos);
-      this.leftPos = this.diff;
       target.ontouchend = () => {
         if (this.diff > 50) {
           this.curIndex = this.prevIndex();
         } else if (this.diff < -50) {
           this.curIndex = this.nextIndex();
         }
-        this.leftPos = 0;
+        this.diff = 0;
       };
     },
     prevIndex() {
@@ -68,8 +65,12 @@ export default {
     }
   },
   created: function() {
-    this.showData();
-    // this.autoChange();
+    this.autoChange();
+  },
+  watch: {
+    sliderData: function(data) {
+      this.sliderData = data
+    }
   }
 };
 </script>
