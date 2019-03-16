@@ -1,6 +1,6 @@
 # 项目使用接口
 
-#### [**原文链接**](https://note.youdao.com/)
+#### [**原文链接**](https://littlefish33.cn/MusicApi/)
 
 #### 获取首页推荐
 https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg
