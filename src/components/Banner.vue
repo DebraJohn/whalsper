@@ -38,6 +38,7 @@ export default {
       this.startPos = e.targetTouches[0].clientX;
     },
     calcPos(e) {
+      e.preventDefault();
       const target = e.currentTarget;
       this.endPos = e.targetTouches[0].clientX;
       this.diff = +(this.endPos - this.startPos);
@@ -61,7 +62,7 @@ export default {
     autoChange() {
       this.autoTimer = setInterval(() => {
         this.curIndex = this.nextIndex();
-      }, 5000);
+      }, 15000);
     }
   },
   created: function() {
@@ -69,7 +70,7 @@ export default {
   },
   watch: {
     sliderData: function(data) {
-      this.sliderData = data
+      this.sliderData = data;
     }
   }
 };

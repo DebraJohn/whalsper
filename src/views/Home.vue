@@ -1,8 +1,10 @@
 <template>
   <div class="home page">
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
     <SearchHead/>
     <Banner :sliderData="recommendData.slider"/>
+    <div class="classification">
+        <a-icon type="fire" />
+    </div>
     <div class="hotList"></div>
   </div>
 </template>
@@ -12,6 +14,10 @@
 import SearchHead from "@/components/SearchHead.vue";
 import Banner from "@/components/Banner.vue";
 import axios from "axios";
+import Vue from "vue";
+
+import { Icon } from "ant-design-vue";
+Vue.use(Icon);
 
 export default {
   name: "home",

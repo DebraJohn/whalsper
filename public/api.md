@@ -16,7 +16,8 @@ https://c.y.qq.com/soso/fcgi-bin/client_search_cp?aggr=1&cr=1&flag_qc=0
 
 必选参数：w（关键词）
 
-可选参数：p（相当于上面的page），（相当于上面的pagesize）
+可选参数：p（相当于上面的page）
+n（相当于上面的pagesize）
 
 eg：
 https://c.y.qq.com/soso/fcgi-bin/client_search_cp?aggr=1&cr=1&flag_qc=0&p=1&n=20&w=再飞行
