@@ -1,6 +1,6 @@
 <template>
   <div class="banner">
-    <div class="wrapper" @touchstart="getStartPos" @touchmove="calcPos">
+    <div class="wrapper" @touchstart="getStartPos" @touchmove="calcPos" ref="wrapper">
       <div
         v-for="(item, i) in sliderData"
         :key="i"
@@ -8,19 +8,15 @@
         class="slider"
         :class="i === curIndex ? 'current' : i === prevIndex() ? 'left' : i === nextIndex() ? 'right' : ''"
       >
-        <img :src="item.picUrl" alt="banner">
+        <img :src="item.picUrl" alt="banner" @load="getHeight">
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Vue from "vue";
-import vueBeauty from "vue-beauty";
-import "vue-beauty/package/style/vue-beauty.min.css";
-Vue.use(vueBeauty);
-
-import axios from "axios";
+// import Vue from "vue";
+// import axios from "axios";
 
 export default {
   name: "banner",
@@ -63,6 +59,13 @@ export default {
       this.autoTimer = setInterval(() => {
         this.curIndex = this.nextIndex();
       }, 15000);
+    },
+    getHeight(e) {
+      this.height = e.target.clientHeight;
+      const originHeight = this.$refs.wrapper.style.height;
+      !originHeight &&
+        this.height &&
+        (this.$refs.wrapper.style.height = this.height + "px");
     }
   },
   created: function() {

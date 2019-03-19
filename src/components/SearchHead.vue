@@ -70,6 +70,7 @@ export default {
     font-size: 18px;
     margin-left: 1rem;
     font-weight: bold;
+    color: #5b79ce;
   }
   .searchInput {
     width: 100%;

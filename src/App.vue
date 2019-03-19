@@ -3,7 +3,7 @@
     <!-- <div id="nav">
       <router-link to="/">Home</router-link>|
       <router-link to="/about">About</router-link>
-    </div> -->
+    </div>-->
     <router-view/>
   </div>
 </template>
@@ -81,17 +81,15 @@ textarea {
   resize: none;
   overflow: auto;
 }
-.clearfix {
-  zoom: 1;
-}
 .clearfix:after {
-  content: ".";
-  width: 0;
+  content: "";
   height: 0;
   visibility: hidden;
   display: block;
   clear: both;
-  overflow: hidden;
+}
+.clearfix {
+  zoom: 1;
 }
 .fl {
   float: left;

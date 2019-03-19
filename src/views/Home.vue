@@ -3,7 +3,10 @@
     <SearchHead/>
     <Banner :sliderData="recommendData.slider"/>
     <div class="classification">
-        <a-icon type="fire" />
+      <div class="classItem" v-for="(item, i) in classificationData" :key="i">
+        <a-icon class="icon" :type="item.icon"/>
+        <div class="name">{{item.name}}</div>
+      </div>
     </div>
     <div class="hotList"></div>
   </div>
@@ -27,7 +30,13 @@ export default {
   },
   data() {
     return {
-      recommendData: {}
+      recommendData: {},
+      classificationData: [
+        { icon: "fire", name: "推荐" },
+        { icon: "line-chart", name: "排行" },
+        { icon: "rocket", name: "最新" },
+        { icon: "customer-service", name: "电台" }
+      ]
     };
   },
   created: function() {
@@ -50,6 +59,20 @@ export default {
   width: 100%;
   height: 100%;
   padding: 5%;
+  .classification {
+    display: flex;
+    justify-content: space-around;
+    .classItem {
+      .name {
+        text-align: center;
+        margin-top: 0.3rem;
+      }
+      .icon {
+        font-size: 35px;
+        color: #628bd8;
+      }
+    }
+  }
 }
 </style>
 
