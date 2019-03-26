@@ -23,7 +23,7 @@ export default {
     // 获取搜索结果
     getSearchResult(word, page = 1, pagesize = 20) {
       axios
-        .get("/soso/fcgi-bin/client_search_cp", {
+        .get("/qq/soso/fcgi-bin/client_search_cp", {
           params: {
             aggr: 1,
             cr: 1,

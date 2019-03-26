@@ -45,10 +45,15 @@ export default {
   methods: {
     fetchData() {
       axios
-        .get("/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg")
+        .get("/qq/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg")
         .then(res => {
           return (this.recommendData = res.data.data);
         });
+    },
+    test() {
+      axios
+        .get("/kugou/yy/index.php?r=play/getdata&_=1497972864535&hash=")
+        .then(() => {});
     }
   }
 };
