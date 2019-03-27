@@ -41,6 +41,9 @@ export default {
   },
   created: function() {
     this.fetchData();
+    this.getNewMusic();
+    this.getRecommendMusic();
+    // this.test()
   },
   methods: {
     fetchData() {
@@ -54,6 +57,51 @@ export default {
       axios
         .get("/kugou/yy/index.php?r=play/getdata&_=1497972864535&hash=")
         .then(() => {});
+    },
+    // 最新音乐
+    getNewMusic() {
+      axios.get("/qq/v8/fcg-bin/fcg_v8_toplist_cp.fcg", {
+        params: {
+          uin: "0",
+          notice: "0",
+          platform: "h5",
+          needNewCode: "1",
+          tpl: "3",
+          page: "detail",
+          type: "top",
+          topid: "27"
+        }
+      });
+    },
+    // 推荐音乐
+    getRecommendMusic() {
+      // 巅峰榜
+      const topicIdArr = {
+        3: "欧美",
+        5: "内地",
+        6: "港台",
+        19: "摇滚",
+        26: "热歌",
+        27: "最新",
+        28: "网络",
+        29: "影视",
+        30: "梦的声音",
+        31: "微信分享榜",
+        32: "音乐人",
+        105: "iTune",
+        107: "UK",
+        108: "Billboard"
+      };
+      axios.get("/qq/v8/fcg-bin/fcg_v8_toplist_cp.fcg", {
+        params: {
+          notice: "0",
+          platform: "h5",
+          tpl: "3",
+          page: "detail",
+          type: "top",
+          topid: "36"
+        }
+      });
     }
   }
 };
