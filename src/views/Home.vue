@@ -1,23 +1,64 @@
 <template>
   <div class="home page">
-    <SearchHead/>
-    <Banner :sliderData="recommendData.slider"/>
-    <div class="classification">
-      <div class="classItem" v-for="(item, i) in classificationData" :key="i">
-        <a-icon class="icon" :type="item.icon"/>
-        <div class="name">{{item.name}}</div>
-      </div>
+    <!-- 搜索框 -->
+    <div class="searchHead">
+      <a-icon type="search" class="searchIcon"></a-icon>
+      <form action="javascript:return true">
+        <input
+          type="search()"
+          @compositionend="search"
+          @keyup="search"
+          class="searchInput"
+          ref="seachInput"
+          @focus="changeSearchState(1)"
+        >
+      </form>
+      <a-icon type="close" v-if="showCancelBtn" class="cancelBtn" @click="clearResult()"></a-icon>
     </div>
-    <div class="hotList"></div>
+    <div class="home-content">
+      <!-- 搜索结果 -->
+      <div
+        class="searchResult"
+        v-show="showCancelBtn"
+        ref="searchResult"
+        @touchstart="hideKeyboard()"
+      >
+        <div class="resBlock songRes" v-for="(group ,j) in searchDatas" :key="j">
+          <div class="title">{{group.name}}</div>
+          <div class="resultItem" v-for="(item ,i) in group.itemlist" :key="i">
+            <span v-if="group.name === '专辑'">《</span>
+            {{item.name}}
+            <span v-if="group.name === '单曲'">- {{item.singer}}</span>
+            <span v-if="group.name === '专辑'">》</span>
+          </div>
+        </div>
+      </div>
+      <!-- Banner -->
+      <Banner :sliderData="recommendData.slider"/>
+      <!-- 分类 -->
+      <div class="classification">
+        <div class="classItem" v-for="(item, i) in classificationData" :key="i">
+          <a-icon class="icon" :type="item.icon"/>
+          <div class="name">{{item.name}}</div>
+        </div>
+      </div>
+      <div class="hotList"></div>
+    </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import SearchHead from "@/components/SearchHead.vue";
 import Banner from "@/components/Banner.vue";
 import axios from "axios";
 import Vue from "vue";
+
+import {
+  getRecommendData,
+  getTopMusic,
+  getSearchData,
+  smartBox
+} from "@/apis/qqPortal";
+import { stringToJSON } from "@/share/format";
 
 import { Icon } from "ant-design-vue";
 Vue.use(Icon);
@@ -25,7 +66,6 @@ Vue.use(Icon);
 export default {
   name: "home",
   components: {
-    SearchHead,
     Banner
   },
   data() {
@@ -36,72 +76,47 @@ export default {
         { icon: "line-chart", name: "排行" },
         { icon: "rocket", name: "最新" },
         { icon: "customer-service", name: "电台" }
-      ]
+      ],
+      showCancelBtn: false,
+      searchDatas: {},
+      searchFlag: 0
     };
   },
   created: function() {
     this.fetchData();
-    this.getNewMusic();
-    this.getRecommendMusic();
-    // this.test()
   },
   methods: {
+    // 获取首页推荐数据
     fetchData() {
-      axios
-        .get("/qq/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg")
-        .then(res => {
-          return (this.recommendData = res.data.data);
+      getRecommendData().then(res => {
+        this.recommendData = res.data.data;
+      });
+    },
+    // 搜索框状态
+    changeSearchState(t) {
+      t ? (this.showCancelBtn = true) : (this.showCancelBtn = false);
+    },
+    // 清空搜索结果
+    clearResult() {
+      this.changeSearchState(0);
+      this.$refs.seachInput.value = "";
+      this.searchDatas = {};
+    },
+    // 隐藏键盘
+    hideKeyboard() {
+      this.$refs.seachInput.blur();
+    },
+    // 执行搜索
+    search() {
+      const value = this.$refs.seachInput.value;
+      this.searchFlag++;
+      if (this.searchFlag === 2) return;
+      value.replace(/\s+/g, "") !== "" &&
+        smartBox(value).then(res => {
+          this.searchFlag = 0;
+          const { song, singer, album } = res.data.data;
+          this.searchDatas = { song, singer, album };
         });
-    },
-    test() {
-      axios
-        .get("/kugou/yy/index.php?r=play/getdata&_=1497972864535&hash=")
-        .then(() => {});
-    },
-    // 最新音乐
-    getNewMusic() {
-      axios.get("/qq/v8/fcg-bin/fcg_v8_toplist_cp.fcg", {
-        params: {
-          uin: "0",
-          notice: "0",
-          platform: "h5",
-          needNewCode: "1",
-          tpl: "3",
-          page: "detail",
-          type: "top",
-          topid: "27"
-        }
-      });
-    },
-    // 推荐音乐
-    getRecommendMusic() {
-      // 巅峰榜
-      const topicIdArr = {
-        3: "欧美",
-        5: "内地",
-        6: "港台",
-        19: "摇滚",
-        26: "热歌",
-        27: "最新",
-        28: "网络",
-        29: "影视",
-        30: "梦的声音",
-        31: "微信分享榜",
-        32: "音乐人",
-        105: "iTune",
-        107: "UK",
-        108: "Billboard"
-      };
-      axios.get("/qq/v8/fcg-bin/fcg_v8_toplist_cp.fcg", {
-        params: {
-          notice: "0",
-          platform: "h5",
-          tpl: "3",
-          page: "detail",
-          type: "top",
-          topid: "36"
-        }
-      });
     }
   }
 };
@@ -112,19 +127,72 @@ export default {
   width: 100%;
   height: 100%;
   padding: 5%;
-  .classification {
-    display: flex;
-    justify-content: space-around;
-    .classItem {
-      .name {
-        text-align: center;
-        margin-top: 0.3rem;
-      }
-      .icon {
-        font-size: 35px;
-        color: #628bd8;
+  .home-content {
+    height: 100%;
+    .searchResult {
+      height: 100%;
+      padding: 0.5rem;
+      .resBlock {
+        margin-bottom: 1rem;
+        .title {
+          // border-bottom: 1px solid #9b9b9b;
+          line-height: 2rem;
+          font-size: 1rem;
+        }
+        .resultItem {
+          border-bottom: 1px solid #e0dddd;
+          line-height: 2.5rem;
+          margin-left: 0.5rem;
+        }
       }
     }
+    .classification {
+      display: flex;
+      justify-content: space-around;
+      .classItem {
+        .name {
+          text-align: center;
+          margin-top: 0.3rem;
+        }
+        .icon {
+          font-size: 35px;
+          color: #628bd8;
+        }
+      }
+    }
+  }
+}
+.searchHead {
+  width: 100%;
+  height: 2.5rem;
+  background: #f1f1f1;
+  border-radius: 2rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  & > form {
+    width: 100%;
+    height: 100%;
+  }
+  .searchIcon {
+    font-size: 18px;
+    margin-left: 1rem;
+    font-weight: bold;
+    color: #5b79ce;
+  }
+  .searchInput {
+    width: 100%;
+    height: 100%;
+    font-size: 14px;
+    padding: 10px;
+    outline: 0;
+    border: 0;
+    background: transparent;
+  }
+  .cancelBtn {
+    font-size: 18px;
+    // color: #6f6f6f;
+    margin-right: 1rem;
   }
 }
 </style>
