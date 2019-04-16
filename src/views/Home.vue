@@ -42,7 +42,16 @@
           <div class="name">{{item.name}}</div>
         </div>
       </div>
-      <div class="hotList"></div>
+      <!-- 推荐歌单 -->
+      <div class="playList">
+        <div class="upperTitle">推荐歌单</div>
+        <div class="list-col">
+          <div v-for="(item, i) in playList" :key="i" class="playListItem">
+            <img :src="item.cover" alt>
+            <span class="title">{{item.title}}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -56,8 +65,11 @@ import {
   getRecommendData,
   getTopMusic,
   getSearchData,
-  smartBox
+  smartBox,
+  getPlayList,
+  getNewAlbum
 } from "@/apis/qqPortal";
+
 import { stringToJSON } from "@/share/format";
 
 import { Icon } from "ant-design-vue";
@@ -79,7 +91,8 @@ export default {
       ],
       showCancelBtn: false,
       searchDatas: {},
-      searchFlag: 0
+      searchFlag: 0,
+      playList: {}
     };
   },
   created: function() {
@@ -90,6 +103,9 @@ export default {
     fetchData() {
       getRecommendData().then(res => {
         this.recommendData = res.data.data;
+      });
+      getPlayList(1, 3).then(res => {
+        this.playList = res.data.recomPlaylist.data.v_hot.slice(0, 3);
       });
     },
     // 搜索框状态
@@ -157,6 +173,37 @@ export default {
         .icon {
           font-size: 35px;
           color: #628bd8;
+        }
+      }
+    }
+    .playList {
+      margin: 5% 0;
+      .upperTitle {
+        // align-self: flex-start;
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin: 5% 0;
+      }
+      .list-col {
+        display: flex;
+        justify-content: space-between;
+        .playListItem {
+          width: 6.5rem;
+          img {
+            height: 6.5rem;
+            overflow: hidden;
+            border-radius: 5px;
+            width: 100%;
+          }
+          .title {
+            margin-top: 0.5rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            word-break: break-all;
+          }
         }
       }
     }

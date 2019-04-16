@@ -1,11 +1,9 @@
 <template>
   <div class="search page">
-    <SearchHead @searchRes="getSearchWord"/>
   </div>
 </template>
 
 <script>
-import SearchHead from "@/components/SearchHead.vue";
 
 import axios from "axios";
 
@@ -17,7 +15,6 @@ export default {
     };
   },
   components: {
-    SearchHead
   },
   methods: {
     // 获取搜索结果

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { commonParams, recomPlaylist, newAlbum } from './qqParams';
 
 const topicIdArr = {
   3: '欧美',
@@ -59,15 +60,26 @@ export function smartBox(key) {
     params: {
       key,
       is_xml: 0,
-      g_tk: 5381,
-      loginUin: 0,
-      hostUin: 0,
-      format: 'json',
-      inCharset: 'utf8',
-      outCharset: 'utf-8',
-      notice: 0,
-      platform: 'yqq.json',
-      needNewCode: 0
+      ...commonParams
     }
   });
+}
+
+// 各专题音乐
+export function getTopicData(stringfyData) {
+  return axios.get('/uqq/cgi-bin/musicu.fcg', {
+    params: {
+      data: stringfyData,
+      ...commonParams
+    }
+  });
+}
+
+// 推荐歌单
+export function getPlayList() {
+  return getTopicData(recomPlaylist);
+}
+
+export function getNewAlbum() {
+  return getTopicData(newAlbum)
 }

@@ -85,7 +85,7 @@ export default {
   white-space: nowrap;
   display: flex;
   justify-content: center;
-  margin: 10% 0;
+  margin: 5% 0;
   .wrapper {
     width: 100%;
     position: relative;

@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" @touchstart="calcMove" @touchmove="preventScroll">
     <!-- <div id="nav">
       <router-link to="/">Home</router-link>|
       <router-link to="/about">About</router-link>
@@ -7,6 +7,28 @@
     <router-view/>
   </div>
 </template>
+
+<script>
+export default {
+   methods: {
+    calcMove(e) {
+      this.startPos = e.targetTouches[0].clientY;
+    },
+    preventScroll(e) {
+      const target = e.currentTarget;
+      this.endPos = e.targetTouches[0].clientY;
+      this.diff = +(this.endPos - this.startPos);
+      target.ontouchend = () => {
+        if (this.diff > 50) {
+          e.preventDefault();
+        }
+        this.diff = 0;
+      };
+    }
+   }
+}
+</script>
+
 
 <style>
 /*公共样式--开始*/
@@ -47,6 +69,7 @@ body {
   font-family: "Microsoft YaHei";
   font-size: 14px;
   color: #333;
+  -webkit-overflow-scrolling: touch;
 }
 h1,
 h2,
@@ -120,6 +143,8 @@ textarea {
 #app {
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  
+  overflow-x: hidden;
+  /* overflow-y: scroll; */
 }
 </style>
