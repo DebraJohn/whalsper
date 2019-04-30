@@ -81,5 +81,33 @@ export function getPlayList() {
 }
 
 export function getNewAlbum() {
-  return getTopicData(newAlbum)
+  return getTopicData(newAlbum);
 }
+
+// 获取歌单详情  未完成
+export function getTrackInfo() {
+  return axios.get('/uqq/cgi-bin/musicu.fcg', {
+    params: {
+      // data: stringfyData,
+      ...commonParams
+    }
+  });
+}
+
+const data = {
+  req_0: {
+    module: 'xiongzhang.XiongZhangReportServer',
+    method: 'url_report',
+    param: {
+      report_list: [
+        {
+          url_type: 3,
+          resource_id: '2646688496',
+          url:
+            'https://y.qq.com/n/m/detail/taoge/index.html?ADTAG: myqq from: myqq channel: 10007100 id: 2646688496'
+        }
+      ]
+    }
+  },
+  comm: { g_tk: 5381, uin: 0, format: 'json' }
+};

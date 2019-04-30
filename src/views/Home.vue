@@ -23,9 +23,11 @@
         ref="searchResult"
         @touchstart="hideKeyboard()"
       >
+        <div class="searchEnter" v-if="getSearchWord().length">搜索"{{getSearchWord()}}"</div>
         <div class="resBlock songRes" v-for="(group ,j) in searchDatas" :key="j">
-          <div class="title">{{group.name}}</div>
+          <div v-if="group.itemlist.length" class="title">{{group.name}}</div>
           <div class="resultItem" v-for="(item ,i) in group.itemlist" :key="i">
+            <a-icon type="search" class="searchIcon"></a-icon>
             <span v-if="group.name === '专辑'">《</span>
             {{item.name}}
             <span v-if="group.name === '单曲'">- {{item.singer}}</span>
@@ -46,7 +48,7 @@
       <div class="playList">
         <div class="upperTitle">推荐歌单</div>
         <div class="list-col">
-          <div v-for="(item, i) in playList" :key="i" class="playListItem">
+          <div v-for="(item, i) in playList" :key="i" class="playListItem" @click="$router.push('/songListDetail');">
             <img :src="item.cover" alt>
             <span class="title">{{item.title}}</span>
           </div>
@@ -70,8 +72,6 @@ import {
   getNewAlbum
 } from "@/apis/qqPortal";
 
-import { stringToJSON } from "@/share/format";
-
 import { Icon } from "ant-design-vue";
 Vue.use(Icon);
 
@@ -92,7 +92,7 @@ export default {
       showCancelBtn: false,
       searchDatas: {},
       searchFlag: 0,
-      playList: {}
+      playList: {},
     };
   },
   created: function() {
@@ -107,6 +107,7 @@ export default {
       getPlayList(1, 3).then(res => {
         this.playList = res.data.recomPlaylist.data.v_hot.slice(0, 3);
       });
+      getNewAlbum();
     },
     // 搜索框状态
     changeSearchState(t) {
@@ -122,9 +123,17 @@ export default {
     hideKeyboard() {
       this.$refs.seachInput.blur();
     },
+    getSearchWord() {
+      const val = this.$refs.seachInput && this.$refs.seachInput.value;
+      return val || "";
+    },
     // 执行搜索
     search() {
-      const value = this.$refs.seachInput.value;
+      const value = this.getSearchWord();
+      if (!value.length) {
+        this.searchDatas = {}
+        return;
+      }
       this.searchFlag++;
       if (this.searchFlag === 2) return;
       value.replace(/\s+/g, "") !== "" &&
@@ -148,6 +157,11 @@ export default {
     .searchResult {
       height: 100%;
       padding: 0.5rem;
+      .searchEnter {
+        color: #628bd8;
+        font-size: 1rem;
+        margin: .5rem 0;
+      }
       .resBlock {
         margin-bottom: 1rem;
         .title {
@@ -156,9 +170,16 @@ export default {
           font-size: 1rem;
         }
         .resultItem {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
           border-bottom: 1px solid #e0dddd;
           line-height: 2.5rem;
-          margin-left: 0.5rem;
+          // margin-left: 0.5rem;
+          .searchIcon {
+            color: #757575;
+            margin-right: .3rem;
+          }
         }
       }
     }
